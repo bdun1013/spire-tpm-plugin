@@ -12,7 +12,10 @@ target_binary = $(word 3, $(target))
 release: $(RELEASES)
 
 $(RELEASES):
-	CGO_ENABLED=0 GOOS=$(target_platform) GOARCH=$(target_architecture) go build -o releases/$(target_platform)/$(target_architecture)/$(target_binary) cmd/$(target_binary).go
+	CGO_ENABLED=0 GOOS=$(target_platform) GOARCH=$(target_architecture) go build -o releases/$(target_platform)/$(target_architecture)/$(target_binary) cmd/$(target_binary)/main.go
 
-.PHONY: $(RELEASES) release
+clean:
+	rm -rf releases
+
+.PHONY: $(RELEASES) release clean
 
