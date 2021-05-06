@@ -14,8 +14,11 @@ release: $(RELEASES)
 $(RELEASES):
 	CGO_ENABLED=0 GOOS=$(target_platform) GOARCH=$(target_architecture) go build -o releases/$(target_platform)/$(target_architecture)/$(target_binary) cmd/$(target_binary)/main.go
 
+test:
+	go test ./...
+
 clean:
 	rm -rf releases
 
-.PHONY: $(RELEASES) release clean
+.PHONY: $(RELEASES) release test clean
 
