@@ -1,5 +1,3 @@
-.ONESHELL:
-
 PLATFORMS := linux darwin
 ARCHITECTURES := amd64 arm64
 BINARIES := tpm_attestor_server tpm_attestor_agent get_tpm_pubhash
@@ -25,9 +23,7 @@ test:
 
 package: $(RELEASE_ARCHIVES)
 $(RELEASE_ARCHIVES): clean-archives
-	sudo chown root:root releases/$(target_platform)/$(target_architecture)/$(target_binary)
-	tar -cvzf releases/$(target_platform)/$(target_architecture)/$(target_binary_hyphens)-$(target_platform)-$(target_architecture).tar.gz -C releases/$(target_platform)/$(target_architecture) $(target_binary)
-	sudo chown $(USER):$(GROUP) releases/$(target_platform)/$(target_architecture)/$(target_binary)
+	tar --owner=root --group=root -cvzf releases/$(target_platform)/$(target_architecture)/$(target_binary_hyphens)-$(target_platform)-$(target_architecture).tar.gz -C releases/$(target_platform)/$(target_architecture) $(target_binary)
 
 clean-archives:
 	rm -rf releases/**/*.tar.gz
