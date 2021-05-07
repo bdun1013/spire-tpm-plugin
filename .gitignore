@@ -9,3 +9,6 @@ releases/
 
 # jetbrains
 .idea
+
+# vscode
+.vscode/
