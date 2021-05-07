@@ -6,6 +6,7 @@
 # releases
 /spire-tpm-plugin-*.tar.gz
 releases/
+build/
 
 # jetbrains
 .idea

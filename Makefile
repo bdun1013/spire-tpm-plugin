@@ -1,12 +1,14 @@
-PLATFORMS := linux darwin
+.ONESHELL:
+
+PLATFORMS := linux
 ARCHITECTURES := amd64 arm64
 BINARIES := tpm_attestor_server tpm_attestor_agent get_tpm_pubhash
 
-RELEASES := $(foreach platform, $(PLATFORMS), $(foreach architecture, $(ARCHITECTURES), $(foreach binary, $(BINARIES), $(platform)-$(architecture)-$(binary))))
-RELEASE_ARCHIVES := $(foreach release, $(RELEASES), $(release)-archive)
+DOCKER_PLATFORMS := $(foreach platform, $(PLATFORMS), $(foreach architecture, $(ARCHITECTURES), --platform $(platform)/$(architecture)))
 
-USER := $(shell id -u)
-GROUP := $(shell id -g)
+BUILDS := $(foreach platform, $(PLATFORMS), $(foreach architecture, $(ARCHITECTURES), $(foreach binary, $(BINARIES), $(platform)-$(architecture)-$(binary))))
+RELEASES := $(foreach build, $(BUILDS), $(build)-release)
+DOCKER_IMAGES := $(foreach binary, $(BINARIES), $(binary)-docker)
 
 target_words = $(subst -, ,$@)
 target_platform = $(word 1, $(target_words))
@@ -14,22 +16,28 @@ target_architecture = $(word 2, $(target_words))
 target_binary = $(word 3, $(target_words))
 target_binary_hyphens = $(subst _,-,$(target_binary))
 
-release: $(RELEASES)
-$(RELEASES):
-	CGO_ENABLED=0 GOOS=$(target_platform) GOARCH=$(target_architecture) go build -ldflags="-s -w" -o releases/$(target_platform)/$(target_architecture)/$(target_binary) cmd/$(target_binary)/main.go
+target_docker_binary = $(word 1, $(target_words))
+target_docker_binary_hyphens = $(subst _,-,$(target_docker_binary))
+
+REGISTRY ?= docker.io
+VERSION ?= develop
+
+build: $(BUILDS)
+$(BUILDS):
+	CGO_ENABLED=0 GOOS=$(target_platform) GOARCH=$(target_architecture) go build -ldflags="-s -w" -o build/$(target_platform)/$(target_architecture)/$(target_binary) cmd/$(target_binary)/main.go
 
 test:
 	go test ./...
 
-package: $(RELEASE_ARCHIVES)
-$(RELEASE_ARCHIVES): clean-archives
-	tar --owner=root --group=root -cvzf releases/$(target_platform)/$(target_architecture)/$(target_binary_hyphens)-$(target_platform)-$(target_architecture).tar.gz -C releases/$(target_platform)/$(target_architecture) $(target_binary)
+release: $(RELEASES)
+$(RELEASES):
+	tar --owner=root --group=root -cvzf releases/$(target_platform)/$(target_architecture)/spire-tpm-plugin-$(target_binary_hyphens)-$(target_platform)-$(target_architecture).tar.gz -C build/$(target_platform)/$(target_architecture) $(target_binary)
 
-clean-archives:
-	rm -rf releases/**/*.tar.gz
+docker: $(DOCKER_IMAGES)
+$(DOCKER_IMAGES):
+	docker buildx build $(DOCKER_PLATFORMS) --build-arg version=$(VERSION) --build-arg binary=$(target_docker_binary) -t $(REGISTRY)/spire-tpm-plugin-$(target_docker_binary_hyphens):$(VERSION) .
 
 clean:
-	rm -rf releases
+	rm -rf build releases
 
-.PHONY: $(RELEASES) release test clean
-
+.PHONY: $(RELEASES) build test release docker clean
