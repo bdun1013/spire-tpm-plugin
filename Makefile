@@ -40,4 +40,4 @@ $(DOCKER_IMAGES):
 clean:
 	rm -rf build releases
 
-.PHONY: $(RELEASES) build test release docker clean
+.PHONY: $(BUILDS) $(RELEASES) $($(DOCKER_IMAGES)) build test release docker clean
