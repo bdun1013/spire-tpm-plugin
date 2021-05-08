@@ -35,7 +35,7 @@ $(RELEASE_TARGETS):
 
 docker: $(DOCKER_TARGETS)
 $(DOCKER_TARGETS):
-	docker buildx build $(DOCKER_PLATFORMS) --build-arg version=$(VERSION) --build-arg binary=$(target_docker_binary) -t $(DOCKER_REGISTRY)/spire-tpm-plugin-$(target_binary_hyphens):$(VERSION) .
+	docker buildx build $(DOCKER_PLATFORMS) --build-arg version=$(VERSION) --build-arg binary=$(target_binary) -t $(DOCKER_REGISTRY)/spire-tpm-plugin-$(target_binary_hyphens):$(VERSION) .
 
 clean:
 	rm -rf $(BUILD_DIR) $(RELEASES_DIR)
