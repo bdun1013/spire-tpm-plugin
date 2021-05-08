@@ -17,7 +17,7 @@ DOCKER_PLATFORMS := $(foreach os, $(OSES), $(foreach architecture, $(ARCHITECTUR
 target_words = $(subst -, ,$@)
 target_binary = $(word 1, $(target_words))
 target_os = $(word 2, $(target_words))
-target_architecture = $(word 2, $(target_words))
+target_architecture = $(word 3, $(target_words))
 
 target_binary_hyphens = $(subst _,-,$(target_binary))
 
