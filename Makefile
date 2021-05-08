@@ -33,11 +33,11 @@ $(RELEASE_TARGETS):
 	mkdir -p releases
 	tar --owner=root --group=root -cvzf $(RELEASES_DIR)/spire_tpm_plugin_$(target_binary)_$(target_os)_$(target_architecture)_$(VERSION).tar.gz -C $(BUILD_DIR)/$(target_os)/$(target_architecture) $(target_binary)
 
-docker: $(DOCKER_IMAGES)
-$(DOCKER_IMAGES):
+docker: $(DOCKER_TARGETS)
+$(DOCKER_TARGETS):
 	docker buildx build $(DOCKER_PLATFORMS) --build-arg version=$(VERSION) --build-arg binary=$(target_docker_binary) -t $(REGISTRY)/spire-tpm-plugin-$(target_binary_hyphens):$(VERSION) .
 
 clean:
 	rm -rf $(BUILD_DIR) $(RELEASES_DIR)
 
-.PHONY: $(BUILDS) $(RELEASES) $($(DOCKER_IMAGES)) build test release docker clean
+.PHONY: $(BUILD_TARGETS) $(RELEASE_TARGETS) $(DOCKER_TARGETS) build test release docker clean
