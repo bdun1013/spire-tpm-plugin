@@ -11,6 +11,6 @@ RUN apk --no-cache add make && \
 WORKDIR /app
 COPY . .
 
-RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o ${binary} cmd/${binary}/main.go
+RUN BINARY=${binary} make docker-build
 
 ENTRYPOINT ./${binary_env}
