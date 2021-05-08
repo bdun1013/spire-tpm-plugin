@@ -38,6 +38,6 @@ $(DOCKER_IMAGES):
 	docker buildx build $(DOCKER_PLATFORMS) --build-arg version=$(VERSION) --build-arg binary=$(target_docker_binary) -t $(REGISTRY)/spire-tpm-plugin-$(target_binary_hyphens):$(VERSION) .
 
 clean:
-	rm -rf build releases
+	rm -rf $(BUILD_DIR) $(RELEASES_DIR)
 
 .PHONY: $(BUILDS) $(RELEASES) $($(DOCKER_IMAGES)) build test release docker clean
