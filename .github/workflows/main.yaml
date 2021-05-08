@@ -56,7 +56,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         assets=()
-        for asset in spire-tpm-plugin-*.tar.gz; do
+        for asset in $(ls releases); do
           assets+=("-a" "$asset")
         done
         hub release create "${assets[@]}" \
