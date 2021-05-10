@@ -90,4 +90,4 @@ jobs:
         github.event_name == 'push'
           && startsWith(github.event.ref, 'refs/tags/')
       run: |
-        VERSION="${{ steps.compute_tag.outputs.TAG }}" ./ci/docker.sh
+        ./ci/docker.sh "${{ steps.compute_tag.outputs.TAG }}"
