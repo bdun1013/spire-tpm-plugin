@@ -52,7 +52,7 @@ jobs:
         ./ci/release.sh "${{ steps.compute_tag.outputs.TAG }}"
         assets=()
         for asset in $(ls releases); do
-          assets+=("-a" "$asset")
+          assets+=("-a" "releases/$asset")
         done
         hub release create "${assets[@]}" \
           -m "${{ steps.compute_tag.outputs.TAG }}" \
