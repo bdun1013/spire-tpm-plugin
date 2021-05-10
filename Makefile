@@ -7,12 +7,11 @@ VERSION ?= develop
 DOCKER_REGISTRY ?= docker.io
 BUILD_DIR ?= ./build
 RELEASES_DIR ?= ./releases
+PLATFORMS ?= $(foreach os, $(OSES), $(foreach architecture, $(ARCHITECTURES), --platform $(os)/$(architecture)))
 
 BUILD_TARGETS := $(foreach binary, $(BINARIES), $(foreach os, $(OSES), $(foreach architecture, $(ARCHITECTURES), $(binary)-$(os)-$(architecture))))
 RELEASE_TARGETS := $(foreach build, $(BUILD_TARGETS), $(build)-release)
 DOCKER_TARGETS := $(foreach binary, $(BINARIES), $(binary)-docker)
-
-BUILDX_PLATFORMS := $(foreach os, $(OSES), $(foreach architecture, $(ARCHITECTURES), --platform $(os)/$(architecture)))
 
 target_words = $(subst -, ,$@)
 target_binary = $(word 1, $(target_words))
@@ -35,7 +34,7 @@ $(RELEASE_TARGETS):
 
 docker: $(DOCKER_TARGETS)
 $(DOCKER_TARGETS):
-	docker buildx build $(BUILDX_PLATFORMS) --build-arg version=$(VERSION) --build-arg binary=$(target_binary) -t $(DOCKER_REGISTRY)/spire-tpm-plugin-$(target_binary_hyphens):$(VERSION) .
+	docker build $(PLATFORMS) --build-arg version=$(VERSION) --build-arg binary=$(target_binary) -t $(DOCKER_REGISTRY)/spire-tpm-plugin-$(target_binary_hyphens):$(VERSION) .
 
 docker-build:
 	CGO_ENABLED=0 go build -ldflags="-s -w" -o ${BINARY} cmd/${BINARY}/main.go

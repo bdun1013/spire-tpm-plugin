@@ -42,19 +42,14 @@ jobs:
           exit 1
         fi
 
-    - name: Pack
-      if: |
-        github.event_name == 'push'
-          && startsWith(github.event.ref, 'refs/tags/')
-      run: ./ci/pack.sh "${{ steps.compute_tag.outputs.TAG }}"
-
-    - name: Create Release
+    - name: Release
       if: |
         github.event_name == 'push'
           && startsWith(github.event.ref, 'refs/tags/')
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        ./ci/release.sh "${{ steps.compute_tag.outputs.TAG }}"
         assets=()
         for asset in $(ls releases); do
           assets+=("-a" "$asset")
@@ -62,3 +57,10 @@ jobs:
         hub release create "${assets[@]}" \
           -m "${{ steps.compute_tag.outputs.TAG }}" \
           "${{ steps.compute_tag.outputs.TAG }}"
+
+    - name: Docker Release
+      if: |
+        github.event_name == 'push'
+          && startsWith(github.event.ref, 'refs/tags/')
+      run: |
+        VERSION="${{ steps.compute_tag.outputs.TAG }}" ./ci/docker.sh
