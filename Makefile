@@ -5,6 +5,7 @@ OSES ?= linux
 ARCHITECTURES ?= amd64 arm64
 VERSION ?= develop
 DOCKER_REGISTRY ?= docker.io
+DOCKER_REPOSITORY_PREFIX ?= boxboatbrian/spire-tpm-plugin
 BUILD_DIR ?= ./build
 RELEASES_DIR ?= ./releases
 PLATFORMS ?= $(foreach os, $(OSES), $(foreach architecture, $(ARCHITECTURES), --platform $(os)/$(architecture)))
@@ -34,7 +35,7 @@ $(RELEASE_TARGETS):
 
 docker: $(DOCKER_TARGETS)
 $(DOCKER_TARGETS):
-	docker build $(PLATFORMS) --build-arg version=$(VERSION) --build-arg binary=$(target_binary) -t $(DOCKER_REGISTRY)/spire-tpm-plugin-$(target_binary_hyphens):$(VERSION) .
+	docker build $(PLATFORMS) --build-arg version=$(VERSION) --build-arg binary=$(target_binary) -t $(DOCKER_REGISTRY)/$(DOCKER_REPOSITORY_PREFIX)-$(target_binary_hyphens):$(VERSION) .
 
 docker-build:
 	CGO_ENABLED=0 go build -ldflags="-s -w" -o ${BINARY} cmd/${BINARY}/main.go
