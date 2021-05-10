@@ -1,4 +1,4 @@
-FROM --platform=${TARGETPLATFORM} golang:1.16.4-alpine3.13
+FROM --platform=${BUILDPLATFORM} golang:1.16.4-alpine3.13 as build
 
 ARG version
 ARG binary
@@ -11,6 +11,14 @@ RUN apk --no-cache add make && \
 WORKDIR /app
 COPY . .
 
-RUN BINARY=${binary} make docker-build
+RUN TARGETOS=${TARGETOS} TARGETARCH=${TARGETARCH} BINARY=${binary} make docker-build
+
+FROM scratch
+
+ARG binary
+
+ENV binary_env=${binary}
+
+COPY --from=build /app/${binary_env} ./${binary_env}
 
 ENTRYPOINT ./${binary_env}

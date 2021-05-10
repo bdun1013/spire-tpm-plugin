@@ -23,7 +23,7 @@ target_binary_hyphens = $(subst _,-,$(target_binary))
 
 build: $(BUILD_TARGETS)
 $(BUILD_TARGETS):
-	CGO_ENABLED=0 GOOS=$(target_os) GOARCH=$(target_architecture) go build -ldflags="-s -w" -o $(BUILD_DIR)/$(target_os)/$(target_architecture)/$(target_binary) cmd/$(target_binary)/main.go
+	CGO_ENABLED=0 GOOS=$(target_os) GOARCH=$(target_architecture) go build -ldflags="-s -w -extldflags -static" -o $(BUILD_DIR)/$(target_os)/$(target_architecture)/$(target_binary) cmd/$(target_binary)/main.go
 
 test:
 	go test ./...
@@ -35,10 +35,10 @@ $(RELEASE_TARGETS):
 
 docker: $(DOCKER_TARGETS)
 $(DOCKER_TARGETS):
-	docker build $(PLATFORMS) --build-arg version=$(VERSION) --build-arg binary=$(target_binary) -t $(DOCKER_REGISTRY)/$(DOCKER_REPOSITORY_PREFIX)/$(target_binary_hyphens):$(VERSION) . --push
+	docker build $(PLATFORMS) --build-arg version=$(VERSION) --build-arg binary=$(target_binary) -t $(DOCKER_REGISTRY)/$(DOCKER_REPOSITORY_PREFIX)-$(target_binary_hyphens):$(VERSION) . --push
 
 docker-build:
-	CGO_ENABLED=0 go build -ldflags="-s -w" -o ${BINARY} cmd/${BINARY}/main.go
+	CGO_ENABLED=0 GOOS=$(TARGETOS) GOARCH=$(TARGETARCH) go build -ldflags="-s -w -extldflags -static" -o ${BINARY} cmd/${BINARY}/main.go
 
 clean:
 	rm -rf $(BUILD_DIR) $(RELEASES_DIR)
