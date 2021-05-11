@@ -17,6 +17,8 @@ RUN TARGETOS=${TARGETOS} TARGETARCH=${TARGETARCH} BINARY=${binary} make docker-b
 
 FROM --platform=${TARGETPLATFORM} alpine:3.13
 
+WORKDIR /app
+
 ARG binary
 ENV binary_env=${binary}
 
