@@ -31,11 +31,11 @@ test:
 release: $(RELEASE_TARGETS)
 $(RELEASE_TARGETS):
 	mkdir -p releases
-	tar --owner=root --group=root -cvzf $(RELEASES_DIR)/spire_tpm_plugin_$(target_binary)_$(target_os)_$(target_architecture)_$(VERSION).tar.gz -C $(BUILD_DIR)/$(target_os)/$(target_architecture) $(target_binary)
+	tar -cvzf $(RELEASES_DIR)/spire_tpm_plugin_$(target_binary)_$(target_os)_$(target_architecture)_$(VERSION).tar.gz -C $(BUILD_DIR)/$(target_os)/$(target_architecture) $(target_binary)
 
 docker: $(DOCKER_TARGETS)
 $(DOCKER_TARGETS):
-	docker build $(PLATFORMS) --build-arg version=$(VERSION) --build-arg binary=$(target_binary) -t $(DOCKER_REGISTRY)/$(DOCKER_REPOSITORY_PREFIX)-$(target_binary_hyphens):$(VERSION) . --push
+	docker build $(PLATFORMS) --build-arg BINARY=$(target_binary) -t $(DOCKER_REGISTRY)/$(DOCKER_REPOSITORY_PREFIX)-$(target_binary_hyphens):$(VERSION) . --push
 
 docker-build:
 	CGO_ENABLED=0 GOOS=$(TARGETOS) GOARCH=$(TARGETARCH) go build -ldflags="-s -w -extldflags -static" -o ${BINARY} cmd/${BINARY}/main.go
